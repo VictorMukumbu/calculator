@@ -45,3 +45,6 @@ const operate =(firstNum,operator,secondNum)=>{
 
 }
 operate(firstNum,operator,secondNum)
+
+const container =document.getElementById(calculator)
+const displayBox =document.createElement("div")
