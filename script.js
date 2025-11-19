@@ -82,4 +82,15 @@ operatorBtn.forEach(button=>{
     })
 })
 
+equalBtn.addEventListener("click",()=>{
+    if (firstNum !==""&&secondNum!==""&&operator!=="") {
+        let result =operate(firstNum,operator,secondNum)
+        display.textContent =result
+        firstNum =result.toString()
+        secondNum=''
+        operator=''
+        waitingForSecondNum=false
+    }
+})
+
 
