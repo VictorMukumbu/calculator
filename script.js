@@ -73,5 +73,13 @@ numberBtn.forEach(element => {
     }) 
 });
 
+operatorBtn.forEach(button=>{
+    button.addEventListener("click",()=>{
+        if (firstNum !=="") {
+            operator =button.textContent
+            waitingForSecondNum = true
+        }
+    })
+})
 
 
