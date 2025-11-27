@@ -1,96 +1,146 @@
-const add=(num1,num2)=>{
-    let result = num1+num2
-    console.log(result)
-    return result
-}
-const subtract=(num1,num2)=>{
-    let result = num1-num2
-    console.log(result)
-    return result
-}
-const multiply=(num1,num2)=>{
-    let result = num1*num2
-    console.log(result)
-    return result
-}
+// Basic Math Operations
+const add = (a, b) => a + b;
+const subtract = (a, b) => a - b;
+const multiply = (a, b) => a * b;
+const divide = (a, b) => (b === 0 ? "Error" : a / b);
 
-const divide=(num1,num2)=>{
-    if (num2 === 0) {
-        console.log("Error: Division by zero");
-        return "Error";
+// Operate Function
+function operate(a, operator, b) {
+    const num1 = parseFloat(a);
+    const num2 = parseFloat(b);
+
+    switch (operator) {
+        case "+": return add(num1, num2);
+        case "-": return subtract(num1, num2);
+        case "*": return multiply(num1, num2);
+        case "/": return divide(num1, num2);
     }
-    let result = num1/num2
-    console.log(result)
-    return result
 }
 
+const display = document.getElementById("display");
 
-const operate =(firstNum,operator,secondNum)=>{
-    const num1=parseFloat(firstNum)
-    const num2 = parseFloat(secondNum)
+let firstNum = "";
+let secondNum = "";
+let operator = "";
+let waitingForSecondNum = false;
+let resultDisplayed = false;
 
-    if(operator==="+"){
-        return add(num1,num2)
-    }
-    if(operator==="-"){
-        return subtract(num1,num2)
-    }
-    if(operator==="*"){
-        return multiply(num1,num2)
-    }
-    if(operator==="/"){
-        return divide(num1,num2)
-    }
+// Update display text
+function updateDisplay() {
+    let text = firstNum;
 
+    if (operator) text += " " + operator + " ";
+    if (secondNum) text += secondNum;
 
+    display.textContent = text;
 }
 
-const container =document.getElementById("calculator")
+// Handle number input
+function inputNumber(num) {
+    if (resultDisplayed) {
+        firstNum = "";
+        resultDisplayed = false;
+    }
 
-const display =document.getElementById("display")
-const numberBtn =document.querySelectorAll(".number")
-const operatorBtn =document.querySelectorAll(".operator")
-const clearBtn =document.querySelector(".clear")
-const equalBtn =document.querySelector(".equal")
-
-let firstNum =""
-let secondNum = ""
-let operator = ""
-let waitingForSecondNum = false
-
-numberBtn.forEach(element => {
-   element.addEventListener("click",()=>{
-    if (waitingForSecondNum) {
-        secondNum += element.textContent
-        display.textContent =secondNum
-        
+    if (!waitingForSecondNum) {
+        if (num === "." && firstNum.includes(".")) return;
+        firstNum += num;
     } else {
-        firstNum += element.textContent
-        display.textContent=firstNum
-        
+        if (num === "." && secondNum.includes(".")) return;
+        secondNum += num;
     }
-        
-    }) 
+
+    updateDisplay();
+}
+
+// Handle operator input
+function inputOperator(op) {
+    if (!firstNum) return;
+
+    // If user already has a full expression, evaluate first
+    if (firstNum && operator && secondNum) {
+        const result = operate(firstNum, operator, secondNum);
+        firstNum = result.toString();
+        secondNum = "";
+    }
+
+    operator = op;
+    waitingForSecondNum = true;
+    resultDisplayed = false;
+    updateDisplay();
+}
+
+// Evaluate
+function evaluate() {
+    if (!firstNum || !operator || !secondNum) return;
+
+    const result = operate(firstNum, operator, secondNum);
+    display.textContent = result;
+
+    firstNum = result.toString();
+    secondNum = "";
+    operator = "";
+    waitingForSecondNum = false;
+    resultDisplayed = true;
+}
+
+// Clear all values
+function clearCalc() {
+    firstNum = "";
+    secondNum = "";
+    operator = "";
+    waitingForSecondNum = false;
+    resultDisplayed = false;
+    display.textContent = "";
+}
+
+// Backspace
+function backspace() {
+    if (resultDisplayed) return; // Don’t backspace displayed results
+
+    if (waitingForSecondNum && secondNum) {
+        secondNum = secondNum.slice(0, -1);
+    } else if (!waitingForSecondNum && firstNum) {
+        firstNum = firstNum.slice(0, -1);
+    }
+
+    updateDisplay();
+}
+
+/* ---------------------------
+      EVENT LISTENERS
+----------------------------*/
+
+// Number buttons
+document.querySelectorAll(".number").forEach(btn =>
+    btn.addEventListener("click", () => inputNumber(btn.textContent))
+);
+
+// Operator buttons
+document.querySelectorAll(".operator").forEach(btn =>
+    btn.addEventListener("click", () => inputOperator(btn.textContent))
+);
+
+// Equals button
+document.querySelector(".equal").addEventListener("click", evaluate);
+
+// Clear button
+document.querySelector(".clear").addEventListener("click", clearCalc);
+
+// Backspace button
+document.querySelector(".backspace")?.addEventListener("click", backspace);
+
+/* ---------------------------
+    KEYBOARD SUPPORT
+----------------------------*/
+document.addEventListener("keydown", (e) => {
+    if (!isNaN(e.key)) inputNumber(e.key);
+
+    if (["+", "-", "*", "/"].includes(e.key)) inputOperator(e.key);
+
+    if (e.key === "Enter") evaluate();
+    if (e.key === "Backspace") backspace();
+    if (e.key === "Escape") clearCalc();
+
+    if (e.key === ".") inputNumber(".");
 });
-
-operatorBtn.forEach(button=>{
-    button.addEventListener("click",()=>{
-        if (firstNum !=="") {
-            operator =button.textContent
-            waitingForSecondNum = true
-        }
-    })
-})
-
-equalBtn.addEventListener("click",()=>{
-    if (firstNum !==""&&secondNum!==""&&operator!=="") {
-        let result =operate(firstNum,operator,secondNum)
-        display.textContent =result
-        firstNum =result.toString()
-        secondNum=''
-        operator=''
-        waitingForSecondNum=false
-    }
-})
-
-

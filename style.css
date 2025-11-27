@@ -24,3 +24,6 @@
   font-size: 18px;
   cursor: pointer;
 }
+.display{
+  border: 1px solid red;
+}
